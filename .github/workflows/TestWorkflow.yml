@@ -30,9 +30,5 @@ jobs:
           API_KEY=$(echo "$RAW_SECRET" | jq -r '.API_KEY')
 
           # 3. Print
-          echo "${#API_KEY}"
+          echo API_KEY        
           
-          
-          
-          echo "Connecting with user: ${{ steps.fetch-secret.outputs.db_user }}"
-          echo "Password is: ${{ steps.fetch-secret.outputs.db_password }}"

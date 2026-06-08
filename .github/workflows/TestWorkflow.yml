@@ -1,0 +1,38 @@
+name: Fetch AWS Secrets Manager CLI
+
+on:
+  workflow_dispatch: # Allows manual triggering for testing
+
+permissions:
+  id-token: write # Required for requesting the JWT OIDC token
+  contents: read  # Required for actions/checkout
+
+jobs:
+  retrieve-secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::665303624732:role/github-demo-role
+          aws-region: us-east-1
+
+      - name: Fetch Secret via CLI
+        id: fetch-secret
+        run: |
+          # 1. Fetch raw JSON payload from Secrets Manager
+          RAW_SECRET=$(aws secretsmanager get-secret-value --secret-id demo/api-key --query SecretString --output text)
+          
+          # 2. Extract specific keys using jq
+          API_KEY=$(echo "$RAW_SECRET" | jq -r '.API_KEY')
+
+          # 3. Print
+          echo "${#API_KEY}"
+          
+          
+          
+          echo "Connecting with user: ${{ steps.fetch-secret.outputs.db_user }}"
+          echo "Password is: ${{ steps.fetch-secret.outputs.db_password }}"
